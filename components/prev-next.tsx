@@ -1,90 +1,66 @@
-"use client";
+// components/prev-next.tsx
+'use client'
 
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import type { PostMeta } from "@/lib/posts";
+import Link from 'next/link'
+import { cn } from '@/lib/utils'
+import type { PostMeta } from '@/lib/posts'
+import { ArrowLeft, ArrowRight } from 'lucide-react'
 
 type Props = {
-  prev?: PostMeta | null;
-  next?: PostMeta | null;
-  className?: string;
-};
-
-export default function PrevNext({ prev, next, className = "" }: Props) {
-  return (
-    <div className={`flex justify-between gap-3 ${className}`}>
-      <Side kind="prev" post={prev} />
-      <Side kind="next" post={next} />
-    </div>
-  );
+  prev: PostMeta | null
+  next: PostMeta | null
+  /** when true, append "vX.Y" next to titles if available */
+  showVersion?: boolean
+  className?: string
 }
 
-function Side({
-  kind,
-  post,
-}: {
-  kind: "prev" | "next";
-  post?: PostMeta | null;
-}) {
-  if (!post) return <div />;
-
-  const label = post.title ?? "";
+export default function PrevNext({ prev, next, showVersion = false, className }: Props) {
+  if (!prev && !next) return null
 
   return (
-    <Button
-      asChild
-      variant="outline"
-      className="border-line bg-card text-text flex items-center gap-2"
+    <nav
+      aria-label="Previous/next posts"
+      className={cn('flex justify-between gap-3', className)}
     >
-      <Link
-        href={`/blog/${post.slug}`}
-        aria-label={`${kind === "prev" ? "Previous" : "Next"}: ${post.title}`}
-      >
-        {kind === "prev" ? <ArrowLeft /> : null}
-        <span>{label}</span>
-        {kind === "next" ? <ArrowRight /> : null}
-      </Link>
-    </Button>
-  );
-}
+      {/* Prev (older) */}
+      <div className="min-w-0 flex-1">
+        {prev ? (
+          <Link
+            href={`/blog/${prev.slug}`}
+            className="group inline-flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2 hover:bg-accent hover:text-accent-foreground transition-colors"
+          >
+            <ArrowLeft className="h-4 w-4 opacity-70 group-hover:opacity-100" />
+            <span className="truncate">
+              {prev.title}
+              {showVersion && prev.version ? ` · v${prev.version}` : ''}
+            </span>
+          </Link>
+        ) : (
+          <span className="inline-flex items-center gap-2 text-muted-foreground opacity-60">
+            <ArrowLeft className="h-4 w-4" /> No older post
+          </span>
+        )}
+      </div>
 
-function ArrowLeft() {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className="shrink-0"
-    >
-      <path d="M5 12h14" />
-      <path d="M5 12l6 6" />
-      <path d="M5 12l6-6" />
-    </svg>
-  );
-}
-function ArrowRight() {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className="shrink-0"
-    >
-      <path d="M5 12h14" />
-      <path d="M13 18l6-6" />
-      <path d="M13 6l6 6" />
-    </svg>
-  );
+      {/* Next (newer) */}
+      <div className="min-w-0 flex-1 text-right">
+        {next ? (
+          <Link
+            href={`/blog/${next.slug}`}
+            className="group inline-flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2 hover:bg-accent hover:text-accent-foreground transition-colors"
+          >
+            <span className="truncate">
+              {next.title}
+              {showVersion && next.version ? ` · v${next.version}` : ''}
+            </span>
+            <ArrowRight className="h-4 w-4 opacity-70 group-hover:opacity-100" />
+          </Link>
+        ) : (
+          <span className="inline-flex items-center gap-2 text-muted-foreground opacity-60">
+            No newer post <ArrowRight className="h-4 w-4" />
+          </span>
+        )}
+      </div>
+    </nav>
+  )
 }

@@ -1,61 +1,71 @@
+// app/layout.tsx
 import "./globals.css";
 import { IBM_Plex_Mono } from "next/font/google";
+import Link from "next/link";
 import {
-  NavigationMenu, NavigationMenuItem, NavigationMenuList, NavigationMenuLink,
+  NavigationMenu,
+  NavigationMenuItem,
+  NavigationMenuList,
+  NavigationMenuLink,
 } from "@/components/ui/navigation-menu";
 import { Separator } from "@/components/ui/separator";
-import { ThemeProvider } from "@/components/theme-provider";
-import ThemeSelect from "@/components/theme-select";
 
 const plex = IBM_Plex_Mono({
   subsets: ["latin"],
-  weight: ["400","500","600","700"],
+  weight: ["400", "500", "600", "700"],
   display: "swap",
 });
 
 export const metadata = {
   title: "Justin’s Projects",
   description: "a simple markdown-powered project log",
-  keywords: ["Next.js", "blog", "software", "tech", "personal site"],
-  authors: [{ name: "Justin Levine", url: "https://justinlevine.me" }],
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={plex.className} suppressHydrationWarning>
-      <body className="min-h-screen bg-background text-foreground">
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-          <main className="max-w-[720px] mx-auto px-5 mt-14 mb-20">
-            <header className="mb-4">
-              <div className="flex items-center justify-between">
-                <a href="/" className="inline-block text-foreground">
-                  <span className="logo-mask align-middle" aria-label="justin’s projects logo" />
-                </a>
-                <div className="flex items-center gap-3">
-                  <NavigationMenu className="hidden sm:flex">
-                    <NavigationMenuList className="gap-4">
-                      <NavigationMenuItem><NavigationMenuLink href="/" className="transition-colors hover:text-neutral-500">home</NavigationMenuLink></NavigationMenuItem>
-                      <NavigationMenuItem><NavigationMenuLink href="/projects" className="transition-colors hover:text-neutral-500">projects</NavigationMenuLink></NavigationMenuItem>
-                    </NavigationMenuList>
-                  </NavigationMenu>
-                </div>
-              </div>
-            </header>
+    <html lang="en" className={plex.className}>
+      <head>
+        <link
+          rel="stylesheet"
+          href="https://unpkg.com/mono-icons@latest/iconfont/icons.css"
+        />
+      </head>
+      <body>
+        <main className="max-w-[720px] mx-auto px-5 mt-14 mb-20">
+          <header className="text-center mb-4">
+            <Link href="/" className="inline-block mb-2 text-foreground">
+              <span className="logo-mask align-middle" aria-label="justin’s projects logo" />
+            </Link>
 
-            <Separator className="bg-line mb-6" />
+            {/* Mobile nav (simple links) */}
+            <nav className="md:hidden mt-2 flex items-center justify-center gap-5 text-sm">
+              <Link href="/" className="fade-hover">home</Link>
+              <Link href="/projects" className="fade-hover">projects</Link>
+            </nav>
 
-            {children}
+            {/* Desktop nav (shadcn NavigationMenu) */}
+            <div className="hidden md:block">
+              <NavigationMenu className="mx-auto">
+                <NavigationMenuList className="gap-4">
+                  <NavigationMenuItem>
+                    <NavigationMenuLink href="/">home</NavigationMenuLink>
+                  </NavigationMenuItem>
+                  <NavigationMenuItem>
+                    <NavigationMenuLink href="/projects">projects</NavigationMenuLink>
+                  </NavigationMenuItem>
+                </NavigationMenuList>
+              </NavigationMenu>
+            </div>
+          </header>
 
+          <Separator className="bg-line mb-6" />
 
-<footer className="mt-12 text-sm text-muted-foreground">
-  <div className="flex items-center justify-between gap-4">
-    <span>© {new Date().getFullYear()} with ❤️ by Justin Levine</span>
-    <ThemeSelect /> {/* icons-only theme switcher */}
-  </div>
-</footer>
+          {children}
 
-          </main>
-        </ThemeProvider>
+          <footer className="mt-12 text-center text-sm text-muted">
+            © {new Date().getFullYear()} with ❤️ by Justin Levine
+          </footer>
+        </main>
       </body>
     </html>
   );

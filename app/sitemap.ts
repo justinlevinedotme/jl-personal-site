@@ -1,23 +1,18 @@
-import { getAllPosts, getAllProjects } from "@/lib/posts";
+import { MetadataRoute } from "next";
 
-export default async function sitemap() {
-  const baseUrl = "https://yourdomain.com"; // change me
-
-  const posts = getAllPosts().map((p) => ({
-    url: `${baseUrl}/blog/${p.slug}`,
-    lastModified: p.date,
-  }));
-
-  const projects = getAllProjects().map((pr) => ({
-    url: `${baseUrl}/projects/${encodeURIComponent(pr.name)}`,
-    lastModified: new Date().toISOString(),
-  }));
-
-  const staticPages = [
-    { url: baseUrl, lastModified: new Date().toISOString() },
-    { url: `${baseUrl}/projects`, lastModified: new Date().toISOString() },
-    { url: `${baseUrl}/about`, lastModified: new Date().toISOString() },
+export default function sitemap(): MetadataRoute.Sitemap {
+  return [
+    {
+      url: "https://justinlevine.me",
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 1,
+    },
+    {
+      url: "https://justinlevine.me/projects",
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.8,
+    },
   ];
-
-  return [...staticPages, ...posts, ...projects];
 }

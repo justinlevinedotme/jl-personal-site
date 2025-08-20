@@ -26,7 +26,7 @@ export default function Home() {
               </div>
 
               <CardTitle className="display text-[2rem] mt-2">
-                <Link href={`/blog/${p.slug}`}>{p.title}</Link>
+                <Link href={`/blog/${p.slug}`} className="transition-colors hover:text-neutral-500">{p.title}</Link>
               </CardTitle>
 
               {p.project && (
@@ -34,7 +34,7 @@ export default function Home() {
                   project:{" "}
                   <Link
                     href={`/projects/${encodeURIComponent(p.project)}`}
-                    className="underline"
+                    className="underline transition-colors hover:text-neutral-500"
                   >
                     {p.project}
                   </Link>

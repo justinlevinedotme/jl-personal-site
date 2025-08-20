@@ -16,6 +16,8 @@ const plex = IBM_Plex_Mono({
 export const metadata = {
   title: "Justin’s Projects",
   description: "a simple markdown-powered project log",
+  keywords: ["Next.js", "blog", "software", "tech", "personal site"],
+  authors: [{ name: "Justin Levine", url: "https://justinlevine.me" }],
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -32,8 +34,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <div className="flex items-center gap-3">
                   <NavigationMenu className="hidden sm:flex">
                     <NavigationMenuList className="gap-4">
-                      <NavigationMenuItem><NavigationMenuLink href="/">home</NavigationMenuLink></NavigationMenuItem>
-                      <NavigationMenuItem><NavigationMenuLink href="/projects">projects</NavigationMenuLink></NavigationMenuItem>
+                      <NavigationMenuItem><NavigationMenuLink href="/" className="transition-colors hover:text-neutral-500">home</NavigationMenuLink></NavigationMenuItem>
+                      <NavigationMenuItem><NavigationMenuLink href="/projects" className="transition-colors hover:text-neutral-500">projects</NavigationMenuLink></NavigationMenuItem>
                     </NavigationMenuList>
                   </NavigationMenu>
                 </div>

@@ -10,7 +10,7 @@ export type PostMeta = {
   summary?: string;
   version?: string;
   cover?: string;
-  project?: string;
+  project: string; // always normalized (never empty) -> "none" if missing
 };
 
 const postsDir = path.join(process.cwd(), "content", "posts");
@@ -44,6 +44,10 @@ export function getPostBySlug(slug: string) {
 
   const { data, content } = matter(file);
 
+  // Normalize project: empty/undefined -> "none"
+  const rawProject = (data.project ?? "").toString().trim();
+  const project = rawProject.length ? rawProject : "none";
+
   const meta: PostMeta = {
     slug: realSlug,
     title: data.title ?? realSlug,
@@ -51,7 +55,7 @@ export function getPostBySlug(slug: string) {
     summary: data.summary ?? "",
     version: data.version ?? "",
     cover: data.cover ?? "",
-    project: (data.project ?? "").toString().trim(),
+    project,
   };
 
   return { meta, content };
@@ -60,7 +64,6 @@ export function getPostBySlug(slug: string) {
 /** MDX renderer helper — returns raw MD/MDX source string plus meta */
 export async function getPostMdx(slug: string) {
   const { meta, content } = getPostBySlug(slug);
-  // MDXRemote (RSC) will compile the raw `content` with your remark/rehype plugins
   return { meta, mdx: content };
 }
 
@@ -71,17 +74,24 @@ export function getAllPosts(): PostMeta[] {
   return posts.sort((a, b) => (a.date < b.date ? 1 : -1));
 }
 
-/** Aggregate unique projects with counts */
+/** Aggregate unique projects with counts (includes "none"; "none" first, then A→Z) */
 export function getAllProjects(): { name: string; count: number }[] {
   const counts = new Map<string, number>();
   for (const p of getAllPosts()) {
-    const key = (p.project || "").trim();
-    if (!key) continue;
-    counts.set(key, (counts.get(key) || 0) + 1);
+    const key = (p.project ?? "none").trim() || "none";
+    counts.set(key, (counts.get(key) ?? 0) + 1);
   }
-  return Array.from(counts.entries())
-    .map(([name, count]) => ({ name, count }))
-    .sort((a, b) => a.name.localeCompare(b.name));
+  return Array.from(counts, ([name, count]) => ({ name, count })).sort((a, b) => {
+    if (a.name === "none") return -1;
+    if (b.name === "none") return 1;
+    return a.name.localeCompare(b.name);
+  });
+}
+
+/** Posts for a given project key (supports "none") */
+export function getPostsByProject(name: string) {
+  const key = (name ?? "none").trim() || "none";
+  return getAllPosts().filter((p) => ((p.project ?? "none").trim() || "none") === key);
 }
 
 /** neighbors for prev/next pills (array sorted newest → oldest) */

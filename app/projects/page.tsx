@@ -1,3 +1,4 @@
+// app/projects/page.tsx
 import Link from "next/link";
 import { getAllProjects } from "@/lib/posts";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -18,10 +19,10 @@ export default function ProjectsIndex() {
       ) : (
         <div className="grid gap-4 mt-4">
           {projects.map((p) => (
-            <Card key={p.name} className="bg-card border-line">
+            <Card key={p.name} className="bg-card border border-border">
               <CardHeader className="pb-2">
                 <CardTitle className="lower">
-                  <Link href={`/projects/${encodeURIComponent(p.name)}`}>
+                  <Link href={`/projects/${encodeURIComponent(p.name)}`} className="transition-colors hover:text-neutral-500">
                     {p.name}
                   </Link>
                 </CardTitle>

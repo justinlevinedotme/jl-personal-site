@@ -4,6 +4,7 @@ import Link from "next/link";
 import { IBM_Plex_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import ThemeSelect from "@/components/theme-select";
+import type { Metadata } from "next";
 
 import {
   NavigationMenu,
@@ -19,14 +20,48 @@ const plex = IBM_Plex_Mono({
   display: "swap",
 });
 
-export const metadata = {
-  title: "Justin’s Projects",
-  description: "a simple markdown-powered project log",
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || "http://localhost:3000";
+
+export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
+  title: { default: "Justin Levine", template: "%s — Justin Levine" },
+  description: "Projects, writing, and experiments by Justin Levine.",
+  openGraph: {
+    url: siteUrl,
+    siteName: "Justin Levine",
+    images: ["/opengraph-image"],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image", 
+    images: ["/twitter-image"],
+  },
+  alternates: { canonical: "/" },
 };
+
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={plex.className} suppressHydrationWarning>
+      <head>
+                  <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "Person",
+                name: "Justin Levine",
+                url: siteUrl,
+                sameAs: [
+                  "https://github.com/justinlevinedotme",
+                  "https://www.linkedin.com/in/hellojustinlevine"
+                ],
+              }),
+            }}
+          />
+
+      </head>
       <body>
         {/* Default theme = dark; still supports system / user choice */}
         <ThemeProvider

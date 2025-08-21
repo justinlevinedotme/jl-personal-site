@@ -1,4 +1,5 @@
 // app/blog/[slug]/page.tsx
+import type { Metadata } from "next";
 import Link from "next/link";
 import { format } from "date-fns";
 import { getAllPosts, getPostMdx, getAdjacentPosts } from "@/lib/posts";
@@ -12,26 +13,27 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import PrevNext from "@/components/prev-next";
-import ThemeSelect from "@/components/theme-select"; // OK to keep if used
-import { Button } from "@/components/ui/button";
-// ⬇️ new
 import MdxRenderer from "./MdxRenderer";
-
 
 type Props = { params: { slug: string } };
 
-export const dynamicParams = false;
-
+// Static generation (SSG) for all posts
 export function generateStaticParams() {
   return getAllPosts().map((p) => ({ slug: p.slug }));
 }
 
-export async function generateMetadata({ params }: Props) {
+// Per‑page metadata (includes dynamic social images)
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { meta } = await getPostMdx(params.slug);
   return {
-    title: `${meta.title} - Justin Levine`,
-    description: meta.summary ?? "",
-
+    title: meta.title,
+    description: meta.summary || `Post by Justin Levine: ${meta.title}`,
+    openGraph: { images: [`/blog/${params.slug}/opengraph-image`] },
+    twitter: {
+      card: "summary_large_image",
+      images: [`/blog/${params.slug}/twitter-image`],
+    },
+    alternates: { canonical: `/blog/${params.slug}` },
   };
 }
 
@@ -56,7 +58,9 @@ export default async function PostPage({ params }: Props) {
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
                   <BreadcrumbLink asChild>
-                    <Link href={`/projects/${encodeURIComponent(meta.project)}`}>
+                    <Link
+                      href={`/projects/${encodeURIComponent(meta.project)}`}
+                    >
                       {meta.project}
                     </Link>
                   </BreadcrumbLink>
@@ -92,18 +96,20 @@ export default async function PostPage({ params }: Props) {
         <p className="text-muted-foreground mt-2">{meta.summary}</p>
       )}
 
-      <MdxRenderer slug={params.slug}/>
+      {/* Render the MDX for this slug */}
+      <MdxRenderer slug={params.slug} />
 
-      { /* debug mode summary */ }
+      {/* debug mode summary */}
       {process.env.NODE_ENV === "development" && (
         <details className="mt-6">
-          <summary className="cursor-pointer text-sm opacity-70">debug: meta</summary>
+          <summary className="cursor-pointer text-sm opacity-70">
+            debug: meta
+          </summary>
           <pre className="text-xs p-3 rounded-lg border mt-2 overflow-x-auto">
             {JSON.stringify(meta, null, 2)}
           </pre>
         </details>
       )}
-
 
       <Separator className="bg-line my-6" />
 

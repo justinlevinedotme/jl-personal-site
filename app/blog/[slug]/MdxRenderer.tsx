@@ -2,31 +2,36 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import type { ComponentType } from "react";
 
-// ⬇️ import client-side UI here (shadcn components are client components)
+// client-side UI (shadcn)
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-type Props = {
-  slug: string;
-};
+type Props = { slug: string };
+
+// Minimal, lib-agnostic typing for MDX components prop
+type ComponentsMap = Record<string, ComponentType<any>>;
+type MDXContentProps = { components?: ComponentsMap };
 
 export default function MdxRenderer({ slug }: Props) {
-  // dynamically import the compiled MDX component for this slug
-  const MDXContent = dynamic(
-    () => import(`@/content/posts/${slug}.mdx` /* webpackChunkName: "post-[request]" */),
+  // Dynamically import the compiled MDX component for this slug
+  const MDXContent = dynamic<MDXContentProps>(
+    () =>
+      import(`@/content/posts/${slug}.mdx`).then(
+        (m) => m.default as ComponentType<MDXContentProps>
+      ),
     { ssr: false }
   );
 
-  // build the components map on the client so we’re not serializing functions across the RSC boundary
-  const components = {
+  const components: ComponentsMap = {
     Button,
     Badge,
   };
 
   return (
     <article className="prose dark:prose-invert">
-      <MDXContent components={components as any} />
+      <MDXContent components={components} />
     </article>
   );
 }

@@ -30,11 +30,11 @@ export default function Home() {
               </CardTitle>
 
               {p.project && (
-                <div className="text text-sm">
-                  project:{" "}
+                <div className="text text-sm font-semibold">
+                  project: {" "}
                   <Link
                     href={`/projects/${encodeURIComponent(p.project)}`}
-                    className="underline transition-colors hover:text-neutral-500"
+                    className="transition-colors hover:text-neutral-50 font-normal"
                   >
                     {p.project}
                   </Link>

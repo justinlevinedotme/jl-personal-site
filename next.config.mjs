@@ -1,14 +1,26 @@
-import createMDX from '@next/mdx'
+import createMDX from "@next/mdx";
+import remarkGfm from "remark-gfm";
+import remarkFrontmatter from "remark-frontmatter";
+import remarkMdxFrontmatter from "remark-mdx-frontmatter";
+import rehypeSlug from "rehype-slug";
+import rehypeAutolinkHeadings from "rehype-autolink-headings";
 
 const withMDX = createMDX({
   extension: /\.mdx?$/,
-  // Note: NO providerImportSource here
-})
+  options: {
+    remarkPlugins: [
+      remarkGfm,
+      remarkFrontmatter,        // parse YAML at the top
+      [remarkMdxFrontmatter, { name: "meta" }], // export as `export const meta = {...}`
+    ],
+    rehypePlugins: [
+      rehypeSlug,
+      [rehypeAutolinkHeadings, { behavior: "wrap" }],
+    ],
+  },
+});
 
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+export default withMDX({
   reactStrictMode: true,
-  pageExtensions: ['ts','tsx','md','mdx'],
-}
-
-export default withMDX(nextConfig)
+  pageExtensions: ["ts", "tsx", "md", "mdx"],
+});

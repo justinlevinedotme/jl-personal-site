@@ -9,8 +9,7 @@ import { ArrowLeft, ArrowRight } from 'lucide-react'
 type Props = {
   prev: PostMeta | null
   next: PostMeta | null
-  /** when true, append "vX.Y" next to titles if available */
-  showVersion?: boolean
+  showVersion?: boolean //shows version if provided
   className?: string
 }
 
@@ -22,7 +21,7 @@ export default function PrevNext({ prev, next, showVersion = false, className }:
       aria-label="Previous/next posts"
       className={cn('flex justify-between gap-3', className)}
     >
-      {/* Prev (older) */}
+      {/* Previous */}
       <div className="min-w-0 flex-1">
         {prev ? (
           <Link
@@ -37,12 +36,12 @@ export default function PrevNext({ prev, next, showVersion = false, className }:
           </Link>
         ) : (
           <span className="inline-flex items-center gap-2 text-muted-foreground opacity-60">
-            <ArrowLeft className="h-4 w-4" /> No older post
+            <ArrowLeft className="h-4 w-4" /> No older post(s)
           </span>
         )}
       </div>
 
-      {/* Next (newer) */}
+      {/* Next */}
       <div className="min-w-0 flex-1 text-right">
         {next ? (
           <Link

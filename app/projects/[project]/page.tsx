@@ -53,7 +53,7 @@ export default function ProjectPage({ params }: Props) {
                 </CardTitle>
               </CardHeader>
               <CardContent className="text-sm">
-                {format(new Date(p.date), "MMM d, yyyy")}
+                {format(new Date(p.date), "MMMM d, yyyy")}
                 {p.summary ? <p className="text-muted-foreground mt-2">{p.summary}</p> : null}
               </CardContent>
             </Card>

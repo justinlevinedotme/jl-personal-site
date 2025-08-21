@@ -4,8 +4,6 @@ import Link from "next/link";
 import { IBM_Plex_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import ThemeSelect from "@/components/theme-select";
-// If you’d rather use the button instead of the select, swap the import:
-// import ModeToggle from "@/components/mode-toggle"
 
 import {
   NavigationMenu,
@@ -29,13 +27,6 @@ export const metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={plex.className} suppressHydrationWarning>
-      <head>
-        {/* optional icon font you had earlier */}
-        <link
-          rel="stylesheet"
-          href="https://unpkg.com/mono-icons@latest/iconfont/icons.css"
-        />
-      </head>
       <body>
         {/* Default theme = dark; still supports system / user choice */}
         <ThemeProvider
@@ -84,11 +75,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
                 {/* Theme picker (icons/select) */}
                 <div className="flex items-center gap-2">
-                  <span className="hidden sm:inline text-muted-foreground">Theme</span>
+                  <span className="hidden sm:inline text-muted-foreground"></span>
                   <ThemeSelect />
-                  {/* If you prefer the toggle button, swap:
-                      <ModeToggle />
-                  */}
                 </div>
               </div>
             </footer>

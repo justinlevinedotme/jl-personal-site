@@ -12,18 +12,11 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import PrevNext from "@/components/prev-next";
-import ThemeSelect from '@/components/theme-select'
-
-import { MDXRemote } from "next-mdx-remote/rsc";
-import remarkGfm from "remark-gfm";
-import rehypeSlug from "rehype-slug";
-import rehypeAutolinkHeadings from "rehype-autolink-headings";
+import ThemeSelect from "@/components/theme-select"; // OK to keep if used
 import { Button } from "@/components/ui/button";
+// ⬇️ new
+import MdxRenderer from "./MdxRenderer";
 
-const mdxComponents = {
-  Button,
-  Badge, // optional: allow <Badge> in posts too
-};
 
 type Props = { params: { slug: string } };
 
@@ -36,13 +29,14 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: Props) {
   const { meta } = await getPostMdx(params.slug);
   return {
-    title: `${meta.title} • Justin’s Projects`,
+    title: `${meta.title} - Justin Levine`,
     description: meta.summary ?? "",
+
   };
 }
 
 export default async function PostPage({ params }: Props) {
-  const { meta, mdx } = await getPostMdx(params.slug);
+  const { meta } = await getPostMdx(params.slug);
   const { prev, next } = getAdjacentPosts(params.slug);
 
   return (
@@ -81,14 +75,6 @@ export default async function PostPage({ params }: Props) {
               {format(new Date(meta.date), "MMMM d, yyyy")}
             </Badge>
           )}
-          {/* You can expose project as a badge too if you want: */}
-          {/* {meta.project && (
-            <Badge asChild variant="outline">
-              <Link href={`/projects/${encodeURIComponent(meta.project)}`}>
-                {meta.project}
-              </Link>
-            </Badge>
-          )} */}
         </div>
       </div>
 
@@ -102,23 +88,22 @@ export default async function PostPage({ params }: Props) {
           className="rounded-xl border border-line mt-3"
         />
       )}
+      {meta.summary && (
+        <p className="text-muted-foreground mt-2">{meta.summary}</p>
+      )}
 
-      {/* MDX content */}
-      <article className="prose prose-invert">
-        <MDXRemote
-          source={mdx}
-          components={mdxComponents} // 👈 gives MDX access to <Button /> etc.
-          options={{
-            mdxOptions: {
-              remarkPlugins: [remarkGfm],
-              rehypePlugins: [
-                rehypeSlug,
-                [rehypeAutolinkHeadings, { behavior: "wrap" }],
-              ],
-            },
-          }}
-        />
-      </article>
+      <MdxRenderer slug={params.slug}/>
+
+      { /* debug mode summary */ }
+      {process.env.NODE_ENV === "development" && (
+        <details className="mt-6">
+          <summary className="cursor-pointer text-sm opacity-70">debug: meta</summary>
+          <pre className="text-xs p-3 rounded-lg border mt-2 overflow-x-auto">
+            {JSON.stringify(meta, null, 2)}
+          </pre>
+        </details>
+      )}
+
 
       <Separator className="bg-line my-6" />
 

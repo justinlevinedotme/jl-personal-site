@@ -3,6 +3,8 @@ import { format } from "date-fns";
 import { getAllPosts } from "@/lib/posts";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import VersionBadge from "@/components/version-badge";
+import { projectToSlug } from "@/lib/slug";
 
 export const revalidate = false;
 
@@ -16,24 +18,24 @@ export default function Home() {
             <CardHeader className="pb-2">
               <div className="flex items-center gap-2 text-sm">
                 <Badge variant="outline">
-                  {p.version
-                    ? `${p.version} · ${format(
-                        new Date(p.date),
-                        "MMMM d, yyyy"
-                      )}`
-                    : format(new Date(p.date), "MMMM d, yyyy")}
+                  {format(new Date(p.date), "MMMM d, yyyy")}
                 </Badge>
+                <VersionBadge version={p.version} />
               </div>
-
               <CardTitle className="display text-[2rem] mt-2">
-                <Link href={`/blog/${p.slug}`} className="transition-colors hover:text-neutral-500">{p.title}</Link>
+                <Link
+                  href={`/blog/${p.slug}`}
+                  className="transition-colors hover:text-neutral-500"
+                >
+                  {p.title}
+                </Link>
               </CardTitle>
 
               {p.project && (
                 <div className="text text-sm font-semibold">
-                  project: {" "}
+                  project:{" "}
                   <Link
-                    href={`/projects/${encodeURIComponent(p.project)}`}
+                    href={`/projects/${projectToSlug(p.project)}`}
                     className="transition-colors hover:text-neutral-50 font-normal"
                   >
                     {p.project}

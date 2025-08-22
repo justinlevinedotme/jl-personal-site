@@ -81,17 +81,26 @@ export function getAllProjects(): { name: string; count: number }[] {
     const key = (p.project ?? "none").trim() || "none";
     counts.set(key, (counts.get(key) ?? 0) + 1);
   }
-  return Array.from(counts, ([name, count]) => ({ name, count })).sort((a, b) => {
-    if (a.name === "none") return -1;
-    if (b.name === "none") return 1;
-    return a.name.localeCompare(b.name);
-  });
+  return Array.from(counts, ([name, count]) => ({ name, count })).sort(
+    (a, b) => {
+      if (a.name === "none") return -1;
+      if (b.name === "none") return 1;
+      return a.name.localeCompare(b.name);
+    }
+  );
 }
 
 /** Posts for a given project key (supports "none") */
 export function getPostsByProject(name: string) {
-  const key = (name ?? "none").trim() || "none";
-  return getAllPosts().filter((p) => ((p.project ?? "none").trim() || "none") === key);
+  const key =
+    decodeURIComponent(name ?? "none")
+      .trim()
+      .toLowerCase() || "none";
+
+  return getAllPosts().filter((p) => {
+    const val = (p.project ?? "none").trim().toLowerCase() || "none";
+    return val === key;
+  });
 }
 
 /** neighbors for prev/next pills (array sorted newest → oldest) */

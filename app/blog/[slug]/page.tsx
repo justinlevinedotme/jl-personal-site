@@ -14,6 +14,8 @@ import {
 } from "@/components/ui/breadcrumb";
 import PrevNext from "@/components/prev-next";
 import MdxRenderer from "./MdxRenderer";
+import { projectToSlug } from "@/lib/slug";
+import VersionBadge from "@/components/version-badge";
 
 type Props = { params: { slug: string } };
 
@@ -58,9 +60,7 @@ export default async function PostPage({ params }: Props) {
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
                   <BreadcrumbLink asChild>
-                    <Link
-                      href={`/projects/${encodeURIComponent(meta.project)}`}
-                    >
+                    <Link href={`/projects/${projectToSlug(meta.project)}`}>
                       {meta.project}
                     </Link>
                   </BreadcrumbLink>
@@ -79,10 +79,14 @@ export default async function PostPage({ params }: Props) {
               {format(new Date(meta.date), "MMMM d, yyyy")}
             </Badge>
           )}
+          <VersionBadge version={meta.version} />
         </div>
       </div>
 
-      <h1 className="display text-[2rem] mt-2 font-semibold">{meta.title}</h1>
+      {/* Post title and cover image */}
+      <h1 className="display text-[2rem] mt-2 font-semibold text-foreground">
+        {meta.title}
+      </h1>
 
       {meta.cover && (
         // eslint-disable-next-line @next/next/no-img-element
@@ -96,13 +100,19 @@ export default async function PostPage({ params }: Props) {
         <p className="text-muted-foreground mt-2">{meta.summary}</p>
       )}
 
+      <Separator className="line my-3" />
+
       {/* Render the MDX for this slug */}
-      <MdxRenderer slug={params.slug} />
+      <div className="post-prose">
+        <MdxRenderer slug={params.slug} />
+      </div>
+
+      <Separator className="line my-3" />
 
       {/* debug mode summary */}
       {process.env.NODE_ENV === "development" && (
         <details className="mt-6">
-          <summary className="cursor-pointer text-sm opacity-70">
+          <summary className="cursor-pointer text-sm text-accent">
             debug: meta
           </summary>
           <pre className="text-xs p-3 rounded-lg border mt-2 overflow-x-auto">
@@ -111,7 +121,7 @@ export default async function PostPage({ params }: Props) {
         </details>
       )}
 
-      <Separator className="bg-line my-6" />
+      <Separator className="line my-6" />
 
       <PrevNext
         prev={prev ?? null}

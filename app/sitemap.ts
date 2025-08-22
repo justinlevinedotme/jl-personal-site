@@ -1,25 +1,32 @@
 // app/sitemap.ts
-import type { MetadataRoute } from "next";
+import { MetadataRoute } from "next";
 import { getAllPosts } from "@/lib/posts";
+import { projectToSlug } from "@/lib/slug";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://justinlevine.me";
+  const base = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  const posts = getAllPosts();
 
-  // Static/top-level pages (add or remove as needed)
-  const staticUrls: MetadataRoute.Sitemap = [
-    { url: `${baseUrl}/`,           changeFrequency: "daily",  priority: 1,   lastModified: new Date() },
-    { url: `${baseUrl}/blog`,       changeFrequency: "daily",  priority: 0.9, lastModified: new Date() },
-    { url: `${baseUrl}/projects`,   changeFrequency: "weekly", priority: 0.6, lastModified: new Date() },
-  ];
-
-  // Blog posts
-  const posts = getAllPosts(); // newest → oldest
-  const postUrls: MetadataRoute.Sitemap = posts.map((p) => ({
-    url: `${baseUrl}/blog/${p.slug}`,
-    lastModified: p.date ? new Date(p.date) : new Date(),
-    changeFrequency: "weekly",
+  const blogEntries = posts.map((p) => ({
+    url: `${base}/blog/${p.slug}`,
+    changefreq: "monthly" as const,
     priority: 0.7,
   }));
 
-  return [...staticUrls, ...postUrls];
+  const projectNames = Array.from(
+    new Set(posts.map((p) => (p.project ?? "none").trim() || "none"))
+  ).filter((n) => n !== "none");
+
+  const projectEntries = projectNames.map((name) => ({
+    url: `${base}/projects/${projectToSlug(name)}`,
+    changefreq: "weekly" as const,
+    priority: 0.6,
+  }));
+
+  return [
+    { url: `${base}/`, changefreq: "weekly", priority: 0.8 },
+    { url: `${base}/projects`, changefreq: "weekly", priority: 0.6 },
+    ...projectEntries,
+    ...blogEntries,
+  ];
 }
